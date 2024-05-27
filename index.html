@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>カメラストリームを取得</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        video, canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>カメラストリームを取得</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="snap">写真を撮る</button>
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+    <a id="download" href="#" download="photo.png" style="display:none;">ダウンロードリンク</a>
+
+    <script>
+        (function() {
+            const video = document.getElementById('video');
+            const snapButton = document.getElementById('snap');
+            const canvas = document.getElementById('canvas');
+            const downloadLink = document.getElementById('download');
+            const context = canvas.getContext('2d');
+
+            const constraints = { 
+                video: { 
+                    facingMode: 'environment' // 背面カメラを優先
+                } 
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then((stream) => {
+                    video.srcObject = stream;
+                })
+                .catch((err) => {
+                    console.error('エラー:', err);
+                    alert(`カメラストリームの取得に失敗しました: ${err.name} - ${err.message}`);
+                });
+
+            snapButton.addEventListener('click', () => {
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL('image/png');
+                downloadLink.href = dataUrl;
+                downloadLink.click();
+            });
+
+            window.addEventListener('resize', () => {
+                const aspectRatio = video.videoWidth / video.videoHeight;
+                const newWidth = Math.min(window.innerWidth, 640);
+                const newHeight = newWidth / aspectRatio;
+                video.width = newWidth;
+                video.height = newHeight;
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+            });
+        })();
+    </script>
+</body>
+</html>
