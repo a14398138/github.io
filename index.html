@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>カメラストリームを取得</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -20,9 +19,8 @@
     </style>
 </head>
 <body>
-    <h1>カメラストリームを取得</h1>
     <video id="video" width="640" height="480" autoplay></video>
-    <button id="snap">写真を撮る</button>
+    <button id="snap"></button>
     <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
     <a id="download" href="#" download="photo.png" style="display:none;">ダウンロードリンク</a>
 
@@ -36,7 +34,7 @@
 
             const constraints = { 
                 video: { 
-                    facingMode: 'environment' // 背面カメラを優先
+                    facingMode: 'environment' 
                 } 
             };
 
@@ -46,7 +44,7 @@
                 })
                 .catch((err) => {
                     console.error('エラー:', err);
-                    alert(`カメラストリームの取得に失敗しました: ${err.name} - ${err.message}`);
+                    alert(`error: ${err.name} - ${err.message}`);
                 });
 
             snapButton.addEventListener('click', () => {
@@ -54,6 +52,7 @@
                 const dataUrl = canvas.toDataURL('image/png');
                 downloadLink.href = dataUrl;
                 downloadLink.click();
+		Clipboard.writeText(dataUrl)
             });
 
             window.addEventListener('resize', () => {
