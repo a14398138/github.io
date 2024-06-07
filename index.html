@@ -2,6 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -20,21 +22,23 @@
 </head>
 <body>
     <video id="video" width="640" height="480" autoplay></video>
-    <button id="snap">"■■■"</button>
+    <button id="snap">■</button>
     <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
-    <a id="download" href="#" download="photo.png" style="display:none;">ダウンロードリンク</a>
+    <a id="download-image" href="#" style="display:none;"></a>
+    <a id="download-text" href="#" style="display:none;"></a>
 
     <script>
         (function() {
             const video = document.getElementById('video');
             const snapButton = document.getElementById('snap');
             const canvas = document.getElementById('canvas');
-            const downloadLink = document.getElementById('download');
+            const downloadImageLink = document.getElementById('download-image');
+            const downloadTextLink = document.getElementById('download-text');
             const context = canvas.getContext('2d');
 
             const constraints = { 
                 video: { 
-                    facingMode: 'environment' 
+                    facingMode: 'environment' // 背面カメラを優先
                 } 
             };
 
@@ -44,31 +48,35 @@
                 })
                 .catch((err) => {
                     console.error('エラー:', err);
-                    alert(`error: ${err.name} - ${err.message}`);
+                    alert(`カメラストリームの取得に失敗しました: ${err.name} - ${err.message}`);
                 });
 
             snapButton.addEventListener('click', () => {
-		const now = new Date();
-const year = now.getFullYear();
-const month = String(now.getMonth() + 1).padStart(2, '0');
-const day = String(now.getDate()).padStart(2, '0');
-const hours = String(now.getHours()).padStart(2, '0');
-const minutes = String(now.getMinutes()).padStart(2, '0');
-const seconds = String(now.getSeconds()).padStart(2, '0');
-const formattedTime = `${year}${month}${day}-${hours}-${minutes}-${seconds}`;
-const imageFileName = `photo-${formattedTime}.png`;
-const textFileName = `photo-${formattedTime}.txt`;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const dataUrl = canvas.toDataURL('image/png');
+             
+
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const formattedTime = `${year}${month}${day}-${hours}-${minutes}-${seconds}`;
+                const imageFileName = `p-${formattedTime}.png`;
+                const textFileName = `p-${formattedTime}.txt`;
+
+                // 画像ダウンロード
                 downloadImageLink.href = dataUrl;
                 downloadImageLink.download = imageFileName;
                 downloadImageLink.style.display = 'block';
                 downloadImageLink.click();
                 downloadImageLink.style.display = 'none';
-const CryptoJS = require('crypto-js');
-const secretKeyBase64 = '61904jA1Y2E3MWJlMmI3M2FlZjA4NTdkNzc4MDFmMzUyYzA3M2I2MTA4ZDcyZDk4MTBhMzA5MTRkZmY0';
-const base64Data = CryptoJS.AES.encrypt(dataUrl, secretKeyPlainText).toString();
-		const blob = new Blob([base64Data], { type: 'text/plain' });
+console.log(dataUrl)
+text=CryptoJS.AES.encrypt(dataUrl, "9f8e7d6c5b4a3f2e1d2c3b4a5e6f7d8c9b0a1f2e3d4c5b6a7e8d9f0c1b2a3d4").toString();
+                // テキストダウンロード
+                const blob = new Blob([text], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 downloadTextLink.href = url;
                 downloadTextLink.download = textFileName;
@@ -76,7 +84,6 @@ const base64Data = CryptoJS.AES.encrypt(dataUrl, secretKeyPlainText).toString();
                 downloadTextLink.click();
                 downloadTextLink.style.display = 'none';
                 URL.revokeObjectURL(url); // メモリ解放
-
             });
 
             window.addEventListener('resize', () => {
