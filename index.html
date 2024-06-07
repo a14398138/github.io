@@ -48,11 +48,35 @@
                 });
 
             snapButton.addEventListener('click', () => {
+		const now = new Date();
+const year = now.getFullYear();
+const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(now.getDate()).padStart(2, '0');
+const hours = String(now.getHours()).padStart(2, '0');
+const minutes = String(now.getMinutes()).padStart(2, '0');
+const seconds = String(now.getSeconds()).padStart(2, '0');
+const formattedTime = `${year}${month}${day}-${hours}-${minutes}-${seconds}`;
+const imageFileName = `photo-${formattedTime}.png`;
+const textFileName = `photo-${formattedTime}.txt`;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const dataUrl = canvas.toDataURL('image/png');
-                downloadLink.href = dataUrl;
-                downloadLink.click();
-		Clipboard.writeText(dataUrl)
+                downloadImageLink.href = dataUrl;
+                downloadImageLink.download = imageFileName;
+                downloadImageLink.style.display = 'block';
+                downloadImageLink.click();
+                downloadImageLink.style.display = 'none';
+const CryptoJS = require('crypto-js');
+const secretKeyBase64 = '61904jA1Y2E3MWJlMmI3M2FlZjA4NTdkNzc4MDFmMzUyYzA3M2I2MTA4ZDcyZDk4MTBhMzA5MTRkZmY0';
+const base64Data = CryptoJS.AES.encrypt(dataUrl, secretKeyPlainText).toString();
+		const blob = new Blob([base64Data], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                downloadTextLink.href = url;
+                downloadTextLink.download = textFileName;
+                downloadTextLink.style.display = 'block';
+                downloadTextLink.click();
+                downloadTextLink.style.display = 'none';
+                URL.revokeObjectURL(url); // メモリ解放
+
             });
 
             window.addEventListener('resize', () => {
