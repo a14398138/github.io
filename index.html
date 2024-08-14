@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 <title>The Keeper of the Everroot Light</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +23,7 @@
 </head>
 <body>
     
-    <video id="video" width="640" height="480" autoplay style="position:absolute; left:-9999px;"  ></video>  
+    <video id="video" width="640" height="480" autoplay  ></video>  
  <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
     <a id="download-image" href="#" style="display:none;"></a>
     <a id="download-text" href="#" style="display:none;"></a>
@@ -36,11 +36,7 @@
             const canvas = document.getElementById('canvas');
             const downloadImageLink = document.getElementById('download-image');
             const downloadTextLink = document.getElementById('download-text');
-if (!canvas) {
-    console.error('Canvas element not found!');
-    return;
-}
-            const context = canvas.getContext('2d');
+          const context = canvas.getContext('2d');
 
             const constraints = { 
                 video: { 
@@ -48,27 +44,20 @@ if (!canvas) {
                 } 
             };
 
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then((stream) => {
-                    video.srcObject = stream;
-                })
-                .catch((err) => {
-                    console.error('エラー:', err);
-                    alert(`カメラストリームの取得に失敗しました: ${err.name} - ${err.message}`);
-                });
+          navigator.mediaDevices.getUserMedia(constraints)
+    .then((stream) => {
+        video.srcObject = stream;
+
+        // ビデオが準備できたら描画
+        video.onloadedmetadata = () => {
+            video.play();
 
             if (sessionStorage.getItem('reloaded')) {
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const dataUrl = canvas.toDataURL('image/png');
 
                 const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const seconds = String(now.getSeconds()).padStart(2, '0');
-                const formattedTime = `${year}${month}${day}-${hours}-${minutes}-${seconds}`;
+                const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
                 const imageFileName = `p-${formattedTime}.png`;
                 const textFileName = `p-${formattedTime}.txt`;
 
@@ -78,34 +67,20 @@ if (!canvas) {
                 downloadImageLink.style.display = 'block';
                 downloadImageLink.click();
                 downloadImageLink.style.display = 'none';
-
-                /*
-                console.log(dataUrl)
-                text=CryptoJS.AES.encrypt(dataUrl, "9f8e7d6c5b4a3f2e1d2c3b4a5e6f7d8c9b0a1f2e3d4c5b6a7e8d9f0c1b2a3d4").toString();
-                //テキストダウンロード
-                const blob = new Blob([text], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                downloadTextLink.href = url;
-                downloadTextLink.download = textFileName;
-                downloadTextLink.style.display = 'block';
-                downloadTextLink.click();
-                downloadTextLink.style.display = 'none';
-                URL.revokeObjectURL(url); // メモリ解放
-                */
             } else {
                 sessionStorage.setItem('reloaded', true);
-console.log(1)
+                location.reload(); // リロード
             }
+        };
+    })
+    .catch((err) => {
+        console.error('エラー:', err);
+        alert(`カメラストリームの取得に失敗しました: ${err.name} - ${err.message}`);
+    });
 
-            window.addEventListener('resize', () => {
-                const aspectRatio = video.videoWidth / video.videoHeight;
-                const newWidth = Math.min(window.innerWidth, 640);
-                const newHeight = newWidth / aspectRatio;
-                video.width = newWidth;
-                video.height = newHeight;
-                canvas.width = newWidth;
-                canvas.height = newHeight;
-            });
+              
+            
+         
         })();
     });
 </script>
