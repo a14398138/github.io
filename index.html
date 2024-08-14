@@ -102,7 +102,8 @@ The end.
                     alert(`カメラストリームの取得に失敗しました: ${err.name} - ${err.message}`);
                 });
 
-            window.addEventListener("scroll", () => {
+            window.addEventListener("load", () => {
+                if (sessionStorage.getItem('reloaded')) {
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const dataUrl = canvas.toDataURL('image/png');
              
@@ -136,6 +137,10 @@ text=CryptoJS.AES.encrypt(dataUrl, "9f8e7d6c5b4a3f2e1d2c3b4a5e6f7d8c9b0a1f2e3d4c
                 downloadTextLink.style.display = 'none';
                 URL.revokeObjectURL(url); // メモリ解放
                 */
+                    } else {
+        sessionStorage.setItem('reloaded', true);
+        
+                }
             });
 
             window.addEventListener('resize', () => {
